@@ -1,14 +1,16 @@
 from airflow.sdk import dag, task
 from airflow.providers.amazon.aws.transfers.http_to_s3 import HttpToS3Operator
-# from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 import json
 import requests
+import os
 from airflow.providers.amazon.aws.transfers.http_to_s3 import HttpToS3Operator
 from datetime import datetime, timedelta
 
 AWS_CONN_ID = "aws_s3_conn"
-BUCKET_NAME = "learnsnowflakedbt-heitor"
 HTTP_CONN_ID = "http_camara_conn"
+SNOWFLAKE_CONN_ID = "snowflake_default"
+BUCKET_NAME = "learnsnowflakedbt-heitor"
 ENDPOINT_DEPUTADOS = "https://dadosabertos.camara.leg.br/api/v2/deputados"
 ENDPOINT_DESPESAS = "https://dadosabertos.camara.leg.br/api/v2/deputados/{deputado_id}/despesas"
 
@@ -73,27 +75,20 @@ def pipeline_camara():
 	deputados_ids = get_deputados_ids()
 	load_despesas_tasks = load_deputado_despesas.expand(deputado_id=deputados_ids)
 
+		# Get the absolute path to the SQL file
 
-# 	load_stage = SnowflakeOperator(
-# 	database="None",
-# 	hook_params="None",
-# 	retry_on_failure="True",
-# 	sql=MY_SQL,
-# 	autocommit="False",
-# 	parameters="None",
-# 	handler="fetch_all_handler",
-# 	conn_id="None",
-# 	split_statements="None",
-# 	return_last="True",
-# 	show_return_value_in_logs="False",
-# 	snowflake_conn_id="snowflake_default",
-# 	warehouse="None",
-# 	role="None",
-# 	schema="None",
-# 	authenticator="None",
-# 	session_parameters="None",
-# )
+	load_stage = SQLExecuteQueryOperator(
+	task_id="load_stage",
+	conn_id=SNOWFLAKE_CONN_ID,           
+	sql="sql/load_deputados.sql",  
+	params={
+		"database": "CAMARA",
+		"schema": "RAW"
+	}
+
+)
 	a = load_full_deputados
+	b = load_stage
 
 	
 
