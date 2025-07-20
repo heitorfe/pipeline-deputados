@@ -14,7 +14,7 @@ BUCKET_NAME = "learnsnowflakedbt-heitor"
 ENDPOINT_DEPUTADOS = "https://dadosabertos.camara.leg.br/api/v2/deputados"
 ENDPOINT_DESPESAS = "https://dadosabertos.camara.leg.br/api/v2/deputados/{deputado_id}/despesas"
 
-@dag(schedule='@daily', start_date=datetime(2020,1,1), catchup=False, tags=['deputados'])
+@dag(schedule=None, start_date=datetime(2020,1,1), catchup=False, tags=['deputados'])
 def pipeline_camara():
 
 	load_full_deputados = HttpToS3Operator(
@@ -85,7 +85,6 @@ def pipeline_camara():
 		"database": "CAMARA",
 		"schema": "RAW"
 	}
-
 )
 	a = load_full_deputados
 	b = load_stage
