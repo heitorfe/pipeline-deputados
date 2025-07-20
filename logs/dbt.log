@@ -1,0 +1,103 @@
+[0m13:37:05.347055 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F05B2DBD70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F05B259DF0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F05B2D9940>]}
+
+
+============================== 13:37:05.368630 | cc6e6840-fa0e-4e48-b43f-4db6f8594f95 ==============================
+[0m13:37:05.368630 [info ] [MainThread]: Running with dbt=1.10.4
+[0m13:37:05.370267 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Users\\HeitorFelix\\.dbt', 'version_check': 'True', 'warn_error': 'None', 'log_path': 'logs', 'debug': 'False', 'fail_fast': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'static_parser': 'True', 'log_format': 'default', 'introspect': 'True', 'target_path': 'None', 'invocation_command': 'dbt init dbt-camara', 'send_anonymous_usage_stats': 'True'}
+[0m13:37:16.244376 [debug] [MainThread]: Starter project path: D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\include\starter_project
+[0m13:37:16.377429 [info ] [MainThread]: 
+Your new dbt project "dbt_camara" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m13:37:16.378501 [info ] [MainThread]: Setting up your profile.
+[0m13:37:55.802308 [error] [MainThread]: Encountered an error:
+
+[0m13:37:55.814264 [error] [MainThread]: Traceback (most recent call last):
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\cli\requires.py", line 161, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\cli\requires.py", line 111, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\cli\main.py", line 483, in init
+    results = task.run()
+              ^^^^^^^^^^
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\task\init.py", line 346, in run
+    self.setup_profile(profile_name)
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\task\init.py", line 262, in setup_profile
+    self.create_profile_from_target(adapter, profile_name=profile_name)
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\task\init.py", line 179, in create_profile_from_target
+    self.create_profile_from_profile_template(profile_template, profile_name)
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\task\init.py", line 163, in create_profile_from_profile_template
+    target = self.generate_target_from_input(prompts, initial_target)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\task\init.py", line 113, in generate_target_from_input
+    numeric_choice = click.prompt(prompt_msg, type=click.INT)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\click\termui.py", line 168, in prompt
+    value = prompt_func(prompt)
+            ^^^^^^^^^^^^^^^^^^^
+  File "D:\projetos\pipeline-deputados\.venv\Lib\site-packages\click\termui.py", line 151, in prompt_func
+    raise Abort() from None
+click.exceptions.Abort
+
+[0m13:37:55.818102 [debug] [MainThread]: Command `dbt init` failed at 13:37:55.817570 after 50.77 seconds
+[0m13:37:55.819132 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F05BD3AF00>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F05DFE7EF0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001F05E0332C0>]}
+[0m13:37:55.820147 [debug] [MainThread]: Flushing usage events
+[0m13:37:56.605774 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:38:11.960747 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000020BC7C933B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000020BC7C92000>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000020BC7C91F70>]}
+
+
+============================== 13:38:11.975730 | 0f06575e-dd94-4528-8d31-27b0751caac9 ==============================
+[0m13:38:11.975730 [info ] [MainThread]: Running with dbt=1.10.4
+[0m13:38:11.976729 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'profiles_dir': 'C:\\Users\\HeitorFelix\\.dbt', 'log_path': 'logs', 'debug': 'False', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'invocation_command': 'dbt init dbt_camara', 'log_format': 'default', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m13:38:12.054300 [debug] [MainThread]: Starter project path: D:\projetos\pipeline-deputados\.venv\Lib\site-packages\dbt\include\starter_project
+[0m13:38:12.131507 [info ] [MainThread]: 
+Your new dbt project "dbt_camara" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m13:38:12.132505 [info ] [MainThread]: Setting up your profile.
+[0m13:39:18.179611 [info ] [MainThread]: Profile dbt_camara written to C:\Users\HeitorFelix\.dbt\profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m13:39:18.181609 [debug] [MainThread]: Command `dbt init` succeeded at 13:39:18.181609 after 66.61 seconds
+[0m13:39:18.181609 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000020BC812B8F0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000020BC9E4FEF0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000020BCA5170B0>]}
+[0m13:39:18.182613 [debug] [MainThread]: Flushing usage events
+[0m13:39:18.833601 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m13:45:51.344234 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000247301B5220>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000247327BC7D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000024732D4A840>]}
+
+
+============================== 13:45:51.355761 | 50fb2a09-11c7-474e-8e89-25ed0c003a26 ==============================
+[0m13:45:51.355761 [info ] [MainThread]: Running with dbt=1.10.4
+[0m13:45:51.356758 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Users\\HeitorFelix\\.dbt', 'fail_fast': 'False', 'debug': 'False', 'log_path': 'logs', 'warn_error': 'None', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'static_parser': 'True', 'log_format': 'default', 'invocation_command': 'dbt run', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m13:45:51.357779 [error] [MainThread]: Encountered an error:
+Runtime Error
+  No dbt_project.yml found at expected path D:\projetos\pipeline-deputados\dbt_project.yml
+  Verify that each entry within packages.yml (and their transitive dependencies) contains a file named dbt_project.yml
+  
+[0m13:45:51.359884 [debug] [MainThread]: Command `dbt run` failed at 13:45:51.358826 after 0.33 seconds
+[0m13:45:51.359884 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000024734341C40>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000024731AC95B0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000247301B5220>]}
+[0m13:45:51.360880 [debug] [MainThread]: Flushing usage events
+[0m13:45:52.028653 [debug] [MainThread]: An error was encountered while trying to flush usage events

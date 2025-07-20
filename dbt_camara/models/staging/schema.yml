@@ -1,0 +1,62 @@
+version: 2
+
+sources:
+  - name: camara_raw
+    schema: raw
+    tables:
+      - name: deputados
+        description: "Raw data of deputados from Câmara API"
+        columns:
+          - name: id
+            description: "Unique identifier for deputado"
+            data_tests:
+              - not_null
+              - unique
+          - name: nome
+            description: "Name of the deputado"
+          - name: partido
+            description: "Political party"
+          - name: uf
+            description: "State abbreviation"
+          - name: url_foto
+            description: "Photo URL"
+
+      - name: despesas
+        description: "Raw expenses data from deputados"
+        columns:
+          - name: deputado_id
+            description: "Foreign key to deputados"
+            data_tests:
+              - not_null
+          - name: cod_documento
+            description: "Document code"
+            data_tests:
+              - not_null
+          - name: valor_documento
+            description: "Document value"
+          - name: valor_liquido
+            description: "Net value"
+          - name: valor_glosa
+            description: "Gloss value"
+
+models:
+  - name: stg_deputados
+    description: "Staging table for deputados with data cleansing"
+    columns:
+      - name: deputado_id
+        description: "Unique identifier for deputado"
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_despesas
+    description: "Staging table for despesas with data cleansing"
+    columns:
+      - name: deputado_id
+        description: "Foreign key to deputados"
+        data_tests:
+          - not_null
+      - name: cod_documento
+        description: "Document code"
+        data_tests:
+          - not_null
