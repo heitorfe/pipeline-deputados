@@ -4,14 +4,13 @@ sources:
   - name: camara_raw
     schema: raw
     tables:
-      - name: deputados
-        description: "Raw data of deputados from Câmara API"
+      - name: deputados_historico
+        description: "Historical and current data of deputados from Câmara API"
         columns:
           - name: id
             description: "Unique identifier for deputado"
             data_tests:
               - not_null
-              - unique
           - name: nome
             description: "Name of the deputado"
           - name: partido
@@ -20,6 +19,12 @@ sources:
             description: "State abbreviation"
           - name: url_foto
             description: "Photo URL"
+          - name: legislatura_id
+            description: "Legislature period ID"
+            data_tests:
+              - not_null
+          - name: is_current
+            description: "Flag indicating if this is the current mandate"
 
       - name: despesas
         description: "Raw expenses data from deputados"
@@ -41,10 +46,14 @@ sources:
 
 models:
   - name: stg_deputados
-    description: "Staging table for deputados with data cleansing"
+    description: "Staging table for deputados with historical data and cleansing"
     columns:
       - name: deputado_id
         description: "Unique identifier for deputado"
+        data_tests:
+          - not_null
+      - name: sk_deputado_historico
+        description: "Surrogate key for historical records (deputado + legislatura + partido)"
         data_tests:
           - not_null
           - unique

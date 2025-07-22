@@ -3,12 +3,14 @@
 ) }}
 
 SELECT 
-    {{ dbt_utils.generate_surrogate_key(['deputado_id']) }} AS sk_deputado,
+    sk_deputado_historico AS sk_deputado,
     deputado_id AS nk_deputado,
     nome_deputado,
     sigla_partido,
     sigla_uf,
     url_foto,
+    legislatura_id,
+    is_current,
     data_carga,
     CURRENT_TIMESTAMP() AS data_atualizacao
 FROM {{ ref('stg_deputados') }}
