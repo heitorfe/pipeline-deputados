@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: vw_ranking_deputados
+    description: "Ranking view of deputados by expenses"
+    columns:
+      - name: nome_deputado
+        description: "Deputy name"
+        data_tests:
+          - not_null
+      - name: sigla_partido
+        description: "Political party"
+      - name: sigla_uf
+        description: "State abbreviation"
+        data_tests:
+          - accepted_values:
+              values: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
+      - name: ano
+        description: "Year"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 2000
+              max_value: 2030
+      - name: total_gasto
+        description: "Total amount spent"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: total_despesas
+        description: "Total number of expenses"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: ranking_gasto_ano
+        description: "Ranking by spending per year"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+      - name: ranking_gasto_uf
+        description: "Ranking by spending per state"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - nome_deputado
+            - ano
+            - sigla_uf
+            - sigla_partido
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 1

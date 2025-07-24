@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: fct_despesas
+    description: "Fact table for deputados expenses"
+    columns:
+      - name: sk_deputado
+        description: "Foreign key to dim_deputados"
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_deputados')
+              field: sk_deputado
+      - name: sk_fornecedor
+        description: "Foreign key to dim_fornecedores"
+        data_tests:
+          - relationships:
+              to: ref('dim_fornecedores')
+              field: sk_fornecedor
+              config:
+                severity: warn
+      - name: sk_tempo
+        description: "Foreign key to dim_tempo"
+        data_tests:
+          - not_null
+      - name: cod_documento
+        description: "Document code"
+        data_tests:
+          - not_null
+      - name: valor_documento
+        description: "Document value"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: valor_liquido
+        description: "Net value"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: data_documento
+        description: "Document date"
+        data_tests:
+          - not_null
+
+    # data_tests:
+    #   - dbt_utils.unique_combination_of_columns:
+    #       combination_of_columns:
+    #         - cod_documento
+    #         - sk_deputado
+    #         - sk_fornecedor
+    #         - valor_documento
+    #         - valor_liquido
+    #         - valor_glosa
+    #   - dbt_expectations.expect_table_row_count_to_be_between:
+    #       min_value: 1
