@@ -4,27 +4,40 @@ sources:
   - name: camara_raw
     schema: raw
     tables:
-      - name: deputados_historico
-        description: "Historical and current data of deputados from Câmara API"
+      - name: deputados_detalhes
+        description: "Current details of all deputados"
         columns:
           - name: id
             description: "Unique identifier for deputado"
             data_tests:
               - not_null
-          - name: nome
-            description: "Name of the deputado"
-          - name: partido
-            description: "Political party"
-          - name: uf
-            description: "State abbreviation"
-          - name: url_foto
-            description: "Photo URL"
-          - name: legislatura_id
-            description: "Legislature period ID"
+              - unique
+          - name: cpf
+            description: "CPF number"
+          - name: nome_civil
+            description: "Civil name"
             data_tests:
               - not_null
-          - name: is_current
-            description: "Flag indicating if this is the current mandate"
+          - name: ultimo_status_id_legislatura
+            description: "Current legislature ID"
+
+      - name: deputado_historico
+        description: "Historical status changes of deputados"
+        columns:
+          - name: deputado_id
+            description: "Deputado identifier"
+            data_tests:
+              - not_null
+          - name: data_hora
+            description: "Timestamp of status change"
+            data_tests:
+              - not_null
+          - name: id_legislatura
+            description: "Legislature period ID"
+          - name: sigla_partido
+            description: "Political party"
+          - name: sigla_uf
+            description: "State abbreviation"
 
       - name: despesas
         description: "Raw expenses data from deputados"
@@ -37,26 +50,58 @@ sources:
             description: "Document code"
             data_tests:
               - not_null
+          - name: data_documento
+            description: "Document date"
+            data_tests:
+              - not_null
           - name: valor_documento
             description: "Document value"
-          - name: valor_liquido
-            description: "Net value"
-          - name: valor_glosa
-            description: "Gloss value"
+            data_tests:
+              - not_null
 
 models:
-  - name: stg_deputados
-    description: "Staging table for deputados with historical data and cleansing"
+  - name: stg_deputados_detalhes
+    description: "Staging table for current deputados details"
     columns:
       - name: deputado_id
         description: "Unique identifier for deputado"
         data_tests:
           - not_null
-      - name: sk_deputado_historico
-        description: "Surrogate key for historical records (deputado + legislatura + partido)"
+          - unique
+      - name: cpf
+        description: "CPF number (standardized)"
+      - name: nome_civil
+        description: "Civil name (standardized)"
         data_tests:
           - not_null
-          - unique
+      - name: data_nascimento
+        description: "Birth date"
+      - name: sexo
+        description: "Gender"
+        data_tests:
+          - accepted_values:
+              values: ['M', 'F', 'MASCULINO', 'FEMININO']
+
+  - name: stg_deputado_historico
+    description: "Staging table for deputado historical changes"
+    columns:
+      - name: deputado_id
+        description: "Deputado identifier"
+        data_tests:
+          - not_null
+      - name: data_inicio_vigencia
+        description: "Start date of status period"
+        data_tests:
+          - not_null
+      - name: id_legislatura
+        description: "Legislature period ID"
+      - name: sigla_partido
+        description: "Political party"
+      - name: sigla_uf
+        description: "State abbreviation"
+        data_tests:
+          - accepted_values:
+              values: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
 
   - name: stg_despesas
     description: "Staging table for despesas with data cleansing"
@@ -69,3 +114,31 @@ models:
         description: "Document code"
         data_tests:
           - not_null
+      - name: data_documento
+        description: "Document date"
+        data_tests:
+          - not_null
+      - name: valor_documento
+        description: "Document value"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: valor_liquido
+        description: "Net value"
+        data_tests:
+          - not_null
+      - name: ano
+        description: "Year"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 2000
+              max_value: 2030
+      - name: mes
+        description: "Month"
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 12

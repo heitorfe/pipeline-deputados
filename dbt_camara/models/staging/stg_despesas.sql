@@ -27,3 +27,4 @@ WHERE deputado_id IS NOT NULL
   AND cod_documento IS NOT NULL
   AND data_documento IS NOT NULL
   AND valor_documento >= 0
+  AND valor_liquido >= 0
