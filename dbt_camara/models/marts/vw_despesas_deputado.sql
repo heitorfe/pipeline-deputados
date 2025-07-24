@@ -5,8 +5,13 @@
 SELECT 
     dd.nk_deputado,
     dd.nome_deputado,
+    dd.nome_eleitoral,
     dd.sigla_partido,
     dd.sigla_uf,
+    dd.id_legislatura,
+    dd.data_inicio_vigencia,
+    dd.data_fim_vigencia,
+    dd.is_current,
     dt.ano,
     dt.nome_mes,
     dt.trimestre,
@@ -19,5 +24,6 @@ FROM {{ ref('fct_despesas') }} f
 INNER JOIN {{ ref('dim_deputados') }} dd ON f.sk_deputado = dd.sk_deputado
 INNER JOIN {{ ref('dim_tempo') }} dt ON f.sk_tempo = dt.sk_tempo
 GROUP BY 
-    dd.nk_deputado, dd.nome_deputado, dd.sigla_partido, dd.sigla_uf,
+    dd.nk_deputado, dd.nome_deputado, dd.nome_eleitoral, dd.sigla_partido, dd.sigla_uf,
+    dd.id_legislatura, dd.data_inicio_vigencia, dd.data_fim_vigencia, dd.is_current,
     dt.ano, dt.nome_mes, dt.trimestre

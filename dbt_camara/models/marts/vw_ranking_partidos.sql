@@ -20,7 +20,7 @@ SELECT
         (SUM(f.valor_liquido) / SUM(SUM(f.valor_liquido)) OVER (PARTITION BY dt.ano)) * 100, 
         2
     ) AS percentual_gasto_nacional,
-    -- Gasto médio por deputado do partido
+    -- Gasto médio por deputado do partido (considerando histórico)
     ROUND(
         SUM(f.valor_liquido) / COUNT(DISTINCT dd.nk_deputado), 
         2
@@ -28,6 +28,7 @@ SELECT
 FROM {{ ref('fct_despesas') }} f
 INNER JOIN {{ ref('dim_deputados') }} dd ON f.sk_deputado = dd.sk_deputado
 INNER JOIN {{ ref('dim_tempo') }} dt ON f.sk_tempo = dt.sk_tempo
+WHERE dd.sigla_partido IS NOT NULL
 GROUP BY 
     dd.sigla_partido, dt.ano, dt.trimestre
 ORDER BY 
