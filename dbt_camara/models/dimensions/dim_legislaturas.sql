@@ -5,7 +5,7 @@
 }}
 
 with legislaturas_seed as (
-  select * from {{ ref('legislaturas') }}
+  select * from {{ source('raw', 'legislaturas') }}
 ),
 
 legislaturas_dim as (

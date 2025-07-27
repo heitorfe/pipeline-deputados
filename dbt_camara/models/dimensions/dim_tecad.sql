@@ -5,11 +5,11 @@
 }}
 
 with tecad_categorias_seed as (
-  select * from {{ ref('tecadCategorias') }}
+  select * from {{ source('raw', 'tecadCategorias') }}
 ),
 
 tecad_termos_seed as (
-  select * from {{ ref('tecadTermos') }}
+  select * from {{ source('raw', 'tecadTermos') }}
 ),
 
 categorias_dim as (

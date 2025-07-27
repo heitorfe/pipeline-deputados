@@ -5,7 +5,7 @@
 }}
 
 with orgaos_seed as (
-  select * from {{ ref('orgaos') }}
+  select * from {{ source('raw', 'orgaos') }}
 ),
 
 orgaos_dim as (

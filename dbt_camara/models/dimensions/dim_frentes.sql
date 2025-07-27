@@ -5,7 +5,7 @@
 }}
 
 with frentes_seed as (
-  select * from {{ ref('frentes') }}
+  select * from {{ source('raw', 'frentes') }}
 ),
 
 frentes_dim as (

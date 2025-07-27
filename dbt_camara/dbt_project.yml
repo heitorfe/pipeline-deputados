@@ -44,6 +44,7 @@ seeds:
   dbt_camara:
     +quote_columns: false
     +delimiter: ";"
+    +schema: "raw"
     
     # Configurações específicas por arquivo
     frentes:
@@ -87,3 +88,37 @@ seeds:
     tecadTermos:
       +column_types:
         codTermo: "integer"
+
+    deputadosOcupacoes:
+      +column_types:
+        id: "integer"
+        uri: "string"
+        titulo: "string"
+        entidade: "string"
+        entidadeUF: "string"
+        entidadePais: "string"
+        anoInicio: "integer"
+        anoFim: "integer"
+
+    deputadosProfissoes:
+      +column_types:
+        uri: "string"
+        id: "integer"
+        dataHora: "timestamp"
+        codTipoProfissao: "integer"
+        titulo: "string"
+
+    deputadosMandatosExternos:
+      +column_types:
+        id: "integer"
+        uri: "string"
+        nomParlamentar: "string"
+        cargo: "string"
+        siglaUf: "string"
+        municipio: "string"
+        anoInicio: "integer"
+        anoFim: "integer"
+        siglaPartidoEleicao: "string"
+        uriPartidoEleicao: "string"
+
+

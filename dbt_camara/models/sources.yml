@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw data layer containing seeds and imported data"
+    schema: raw
+    tables:
+      - name: frentes
+        description: "Parliamentary fronts information"
+      - name: frentesDeputados
+        description: "Deputies affiliated with parliamentary fronts"
+      - name: funcionarios
+        description: "Chamber employees"
+      - name: grupos
+        description: "Parliamentary groups"
+      - name: gruposHistorico
+        description: "Historical data of parliamentary groups"
+      - name: gruposMembros
+        description: "Members of parliamentary groups"
+      - name: legislaturas
+        description: "Legislative periods"
+      - name: legislaturasMesas
+        description: "Directive boards of legislatures"
+      - name: orgaos
+        description: "Chamber organs and committees"
+      - name: tecadCategorias
+        description: "TECAD categories"
+      - name: tecadTermos
+        description: "TECAD terms"
+      - name: deputadosMandatosExternos
+        description: "External mandates of deputies"
+      - name: deputadosOcupacoes
+        description: "Occupations of deputies"
+      - name: deputadosProfissoes
+        description: "Professions of deputies"

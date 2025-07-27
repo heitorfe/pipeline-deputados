@@ -9,7 +9,7 @@ with dim_frentes as (
 ),
 
 frentes_deputados as (
-  select * from {{ ref('frentesDeputados') }}
+  select * from {{ source('raw', 'frentesDeputados') }}
 ),
 
 frentes_completa as (
