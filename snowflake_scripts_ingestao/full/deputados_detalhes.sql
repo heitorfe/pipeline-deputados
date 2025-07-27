@@ -51,5 +51,4 @@ SELECT
     $1:ultimoStatus:gabinete:telefone::STRING,
     $1:ultimoStatus:gabinete:nome::STRING,
     $1:uri::STRING
-FROM @camara/deputados/parquet/deputados_detail.parquet
-(FILE_FORMAT => 'parquet_format');
+FROM @camara/deputados/parquet/deputados_detail.parquet;

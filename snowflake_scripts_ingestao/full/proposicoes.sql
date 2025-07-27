@@ -64,5 +64,4 @@ SELECT
     $1:uriAutores::STRING,
     $1:uriOrgaoNumerador::STRING,
     $1:urlInteiroTeor::STRING
-FROM @camara/votos/parquet/
-(FILE_FORMAT => 'parquet_format');
+FROM @camara/votos/parquet/;

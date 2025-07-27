@@ -41,5 +41,4 @@ SELECT
     $1:uri::STRING,
     $1:uriPartido::STRING,
     $1:urlFoto::STRING
-FROM @camara/deputados/parquet/historicos-deputados.parquet
-(FILE_FORMAT => 'parquet_format');
+FROM @camara/deputados/parquet/historicos-deputados.parquet;

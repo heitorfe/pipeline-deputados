@@ -4,11 +4,6 @@ USE WAREHOUSE COMPUTE_WH;
 USE DATABASE CAMARA;
 USE SCHEMA raw;
 
-SELECT $1
-FROM @camara/proposicoes/parquet
-(FILE_FORMAT => (TYPE => PARQUET))
-LIMIT 5;
-
 CREATE OR REPLACE TABLE raw.votacoes (
     id STRING,
     data DATE,

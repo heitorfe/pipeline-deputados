@@ -49,5 +49,4 @@ SELECT
     $1:valorDocumento::FLOAT,
     $1:valorGlosa::FLOAT,
     $1:valorLiquido::FLOAT
-FROM @camara/despesas/parquet/
-(FILE_FORMAT => 'parquet_format');
+FROM @camara/despesas/parquet/;
