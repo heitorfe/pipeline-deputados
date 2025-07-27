@@ -38,3 +38,52 @@ models:
     # Mart models - views for flexibility
     marts:
       +materialized: view
+
+# Configuring seeds
+seeds:
+  dbt_camara:
+    +quote_columns: false
+    +delimiter: ";"
+    
+    # Configurações específicas por arquivo
+    frentes:
+      +column_types:
+        id: "integer"
+        idLegislatura: "integer"
+        idSituacao: "integer"
+        coordenador_id: "integer"
+        coordenador_idLegislatura: "integer"
+    
+    frentesDeputados:
+      +column_types:
+        id: "integer"
+        deputado_id: "integer"
+        deputado_idLegislatura: "integer"
+        deputado_codTitulo: "integer"
+    
+    funcionarios:
+      +column_types:
+        codGrupo: "integer"
+    
+    grupos:
+      +column_types:
+        id: "integer"
+        codSituacao: "integer"
+    
+    legislaturas:
+      +column_types:
+        idLegislatura: "integer"
+    
+    orgaos:
+      +column_types:
+        codTipoOrgao: "integer"
+        codSituacao: "integer"
+    
+    tecadCategorias:
+      +column_types:
+        codCategoria: "integer"
+        codSubCategoria: "integer"
+    
+    tecadTermos:
+      +column_types:
+        codTermo: "integer"
