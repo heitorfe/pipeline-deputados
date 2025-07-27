@@ -1,0 +1,314 @@
+version: 2
+
+seeds:
+  # Seed tables for dimension data
+  - name: frentes
+    description: "Parliamentary fronts information"
+    columns:
+      - name: id
+        description: "Unique identifier for the parliamentary front"
+        data_tests:
+          - not_null
+          - unique
+      - name: uri
+        description: "API URI for the front"
+      - name: titulo
+        description: "Title of the parliamentary front"
+        data_tests:
+          - not_null
+      - name: dataCriacao
+        description: "Creation date"
+      - name: idLegislatura
+        description: "Legislature ID"
+      - name: telefone
+        description: "Contact phone"
+      - name: email
+        description: "Contact email"
+      - name: keywords
+        description: "Keywords"
+      - name: idSituacao
+        description: "Status ID"
+      - name: situacao
+        description: "Status description"
+      - name: urlWebsite
+        description: "Website URL"
+      - name: urlDocumento
+        description: "Document URL"
+      - name: coordenador_id
+        description: "Coordinator deputy ID"
+      - name: coordenador_uri
+        description: "Coordinator API URI"
+      - name: coordenador_nome
+        description: "Coordinator name"
+      - name: coordenador_siglaPartido
+        description: "Coordinator party"
+      - name: coordenador_uriPartido
+        description: "Coordinator party URI"
+      - name: coordenador_siglaUf
+        description: "Coordinator state"
+      - name: coordenador_idLegislatura
+        description: "Coordinator legislature ID"
+      - name: coordenador_urlFoto
+        description: "Coordinator photo URL"
+
+  - name: frentesDeputados
+    description: "Deputies belonging to parliamentary fronts"
+    columns:
+      - name: id
+        description: "Front ID"
+        data_tests:
+          - not_null
+      - name: uri
+        description: "Front URI"
+      - name: titulo
+        description: "Front title"
+      - name: deputado_id
+        description: "Deputy ID"
+        data_tests:
+          - not_null
+      - name: deputado_uri
+        description: "Deputy URI"
+      - name: deputado_uriPartido
+        description: "Deputy party URI"
+      - name: deputado_nome
+        description: "Deputy name"
+      - name: deputado_siglaUf
+        description: "Deputy state abbreviation"
+      - name: deputado_idLegislatura
+        description: "Deputy legislature ID"
+      - name: deputado_urlFoto
+        description: "Deputy photo URL"
+      - name: deputado_codTitulo
+        description: "Deputy title code"
+      - name: deputado_titulo
+        description: "Deputy title"
+      - name: dataInicio
+        description: "Start date"
+      - name: dataFim
+        description: "End date"
+
+  - name: funcionarios
+    description: "Chamber employees information"
+    columns:
+      - name: ponto
+        description: "Employee ID"
+        data_tests:
+          - not_null
+          - unique
+      - name: codGrupo
+        description: "Group code"
+      - name: grupo
+        description: "Employee group"
+      - name: nome
+        description: "Employee name"
+        data_tests:
+          - not_null
+      - name: cargo
+        description: "Position"
+      - name: lotacao
+        description: "Department allocation"
+      - name: atoNomeacao
+        description: "Appointment act"
+      - name: dataNomeacao
+        description: "Appointment date"
+      - name: dataInicioHistorico
+        description: "Historical start date"
+      - name: dataPubNomeacao
+        description: "Appointment publication date"
+      - name: funcao
+        description: "Function"
+      - name: uriLotacao
+        description: "Department URI"
+
+  - name: grupos
+    description: "Parliamentary groups information"
+    columns:
+      - name: id
+        description: "Group ID"
+        data_tests:
+          - not_null
+          - unique
+      - name: uri
+        description: "Group URI"
+      - name: nome
+        description: "Group name"
+        data_tests:
+          - not_null
+      - name: dataInicio
+        description: "Start date"
+      - name: dataFim
+        description: "End date"
+      - name: codSituacao
+        description: "Status code"
+      - name: descricaoSituacao
+        description: "Status description"
+
+  - name: gruposHistorico
+    description: "Historical changes in parliamentary groups"
+    columns:
+      - name: idGrupo
+        description: "Group ID"
+        data_tests:
+          - not_null
+      - name: dataAlteracao
+        description: "Change date"
+        data_tests:
+          - not_null
+      - name: idDeputado
+        description: "Deputy ID"
+        data_tests:
+          - not_null
+      - name: nomeDeputado
+        description: "Deputy name"
+      - name: siglaPartido
+        description: "Political party"
+      - name: siglaUf
+        description: "State abbreviation"
+      - name: tipo
+        description: "Change type"
+
+  - name: gruposMembros
+    description: "Current members of parliamentary groups"
+    columns:
+      - name: idGrupo
+        description: "Group ID"
+        data_tests:
+          - not_null
+      - name: idDeputado
+        description: "Deputy ID"
+        data_tests:
+          - not_null
+      - name: nomeDeputado
+        description: "Deputy name"
+      - name: siglaPartido
+        description: "Political party"
+      - name: siglaUf
+        description: "State abbreviation"
+      - name: urlFoto
+        description: "Photo URL"
+
+  - name: legislaturas
+    description: "Legislature periods"
+    columns:
+      - name: id
+        description: "Legislature ID"
+        data_tests:
+          - not_null
+          - unique
+      - name: uri
+        description: "Legislature URI"
+      - name: dataInicio
+        description: "Start date"
+        data_tests:
+          - not_null
+      - name: dataFim
+        description: "End date"
+      - name: dataEleicao
+        description: "Election date"
+      - name: dataPosse
+        description: "Inauguration date"
+
+  - name: legislaturasMesas
+    description: "Directive boards of legislatures"
+    columns:
+      - name: idLegislatura
+        description: "Legislature ID"
+        data_tests:
+          - not_null
+      - name: dataInicio
+        description: "Start date"
+        data_tests:
+          - not_null
+      - name: dataFim
+        description: "End date"
+      - name: cargo
+        description: "Position"
+        data_tests:
+          - not_null
+      - name: idDeputado
+        description: "Deputy ID"
+        data_tests:
+          - not_null
+      - name: nomeDeputado
+        description: "Deputy name"
+      - name: siglaPartido
+        description: "Political party"
+      - name: siglaUf
+        description: "State abbreviation"
+      - name: urlFoto
+        description: "Photo URL"
+
+  - name: orgaos
+    description: "Chamber organs and committees"
+    columns:
+      - name: uri
+        description: "Organ URI"
+        data_tests:
+          - not_null
+          - unique
+      - name: sigla
+        description: "Organ abbreviation"
+      - name: apelido
+        description: "Organ nickname"
+      - name: nome
+        description: "Organ name"
+        data_tests:
+          - not_null
+      - name: nomePublicacao
+        description: "Publication name"
+      - name: codTipoOrgao
+        description: "Organ type code"
+      - name: tipoOrgao
+        description: "Organ type description"
+      - name: dataInicio
+        description: "Start date"
+      - name: dataInstalacao
+        description: "Installation date"
+      - name: dataFim
+        description: "End date"
+      - name: dataFimOriginal
+        description: "Original end date"
+      - name: codSituacao
+        description: "Status code"
+      - name: descricaoSituacao
+        description: "Status description"
+      - name: casa
+        description: "House"
+      - name: sala
+        description: "Room"
+      - name: urlWebsite
+        description: "Website URL"
+
+  - name: tecadCategorias
+    description: "TECAD categories for thematic classification"
+    columns:
+      - name: id
+        description: "Category ID"
+        data_tests:
+          - not_null
+          - unique
+      - name: nome
+        description: "Category name"
+        data_tests:
+          - not_null
+      - name: descricao
+        description: "Category description"
+
+  - name: tecadTermos
+    description: "TECAD terms for thematic classification"
+    columns:
+      - name: id
+        description: "Term ID"
+        data_tests:
+          - not_null
+          - unique
+      - name: nome
+        description: "Term name"
+        data_tests:
+          - not_null
+      - name: idCategoria
+        description: "Category ID"
+        data_tests:
+          - not_null
+      - name: descricao
+        description: "Term description"
