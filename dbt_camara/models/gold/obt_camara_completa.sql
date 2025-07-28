@@ -76,8 +76,8 @@ votacoes_do_mes AS (
         ano,
         mes,
         COUNT(*) AS qtd_votacoes_mes,
-        COUNT(DISTINCT sigla_orgao) AS qtd_orgaos_votaram,
-        AVG(aprovacao) AS media_aprovacao_mes
+        COUNT(DISTINCT proposicao_sigla_tipo) AS qtd_tipos_proposicao,
+        COUNT(DISTINCT proposicao_id) AS qtd_proposicoes_votadas
     FROM {{ ref('stg_votacoes') }}
     GROUP BY ano, mes
 ),
@@ -125,8 +125,8 @@ votacoes_com_contexto AS (
         vot.ano,
         vot.mes,
         vot.qtd_votacoes_mes,
-        vot.qtd_orgaos_votaram,
-        vot.media_aprovacao_mes,
+        vot.qtd_tipos_proposicao,
+        vot.qtd_proposicoes_votadas,
         -- Adicionar métricas de tramitações do mesmo período
         COALESCE(tra.qtd_tramitacoes_mes, 0) AS qtd_tramitacoes_contexto,
         COALESCE(tra.qtd_proposicoes_tramitadas, 0) AS qtd_proposicoes_tramitadas_contexto
@@ -184,8 +184,8 @@ obt_final AS (
         
         -- Contexto das votações e tramitações do mês
         COALESCE(vmc.qtd_votacoes_mes, 0) AS qtd_votacoes_mes,
-        COALESCE(vmc.qtd_orgaos_votaram, 0) AS qtd_orgaos_votaram,
-        COALESCE(vmc.media_aprovacao_mes, 0) AS media_aprovacao_mes,
+        COALESCE(vmc.qtd_tipos_proposicao, 0) AS qtd_tipos_proposicao,
+        COALESCE(vmc.qtd_proposicoes_votadas, 0) AS qtd_proposicoes_votadas,
         COALESCE(vmc.qtd_tramitacoes_contexto, 0) AS qtd_tramitacoes_mes,
         COALESCE(vmc.qtd_proposicoes_tramitadas_contexto, 0) AS qtd_proposicoes_tramitadas_mes,
         

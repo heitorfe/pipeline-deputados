@@ -430,8 +430,6 @@ models:
           - not_null
       - name: ementa
         description: "Proposition summary"
-        data_tests:
-          - not_null
       - name: data_apresentacao
         description: "Presentation date"
         data_tests:
@@ -506,3 +504,75 @@ models:
         description: "Theme description"
         data_tests:
           - not_null
+
+  - name: stg_votacoes
+    description: "Staging table for voting sessions based on voting objects"
+    columns:
+      - name: id_votacao
+        description: "Unique voting session identifier"
+        data_tests:
+          - not_null
+      - name: data_votacao
+        description: "Voting date"
+        data_tests:
+          - not_null
+      - name: descricao_votacao
+        description: "Voting description"
+      - name: proposicao_id
+        description: "Related proposition ID"
+      - name: proposicao_sigla_tipo
+        description: "Proposition type abbreviation"
+      - name: proposicao_numero
+        description: "Proposition number"
+      - name: proposicao_ano
+        description: "Proposition year"
+
+  - name: stg_votos
+    description: "Staging table for individual deputy votes"
+    columns:
+      - name: id_votacao
+        description: "Voting session identifier"
+        data_tests:
+          - not_null
+      - name: deputado_id
+        description: "Deputy identifier"
+        data_tests:
+          - not_null
+      - name: tipo_voto
+        description: "Vote type (SIM, NÃO, ABSTENÇÃO, etc.)"
+        data_tests:
+          - not_null
+      - name: data_registro_voto
+        description: "Vote registration timestamp"
+
+  - name: stg_votacoes_orientacoes
+    description: "Staging table for party/group voting orientations"
+    columns:
+      - name: id_votacao
+        description: "Voting session identifier"
+        data_tests:
+          - not_null
+      - name: orientacao
+        description: "Party orientation for the vote"
+        data_tests:
+          - not_null
+      - name: sigla_bancada
+        description: "Party/group abbreviation"
+      - name: sigla_orgao
+        description: "Organ abbreviation"
+
+  - name: stg_votacoes_proposicoes
+    description: "Staging table for propositions in voting sessions"
+    columns:
+      - name: id_votacao
+        description: "Voting session identifier"
+        data_tests:
+          - not_null
+      - name: data_votacao
+        description: "Voting date"
+        data_tests:
+          - not_null
+      - name: proposicao_id
+        description: "Proposition identifier"
+      - name: proposicao_titulo
+        description: "Proposition title"

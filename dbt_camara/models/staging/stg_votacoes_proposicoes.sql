@@ -2,7 +2,7 @@
     materialized='view'
 ) }}
 
--- Baseado na tabela votacoes_objetos que contém informações das votações e proposições
+-- Proposições em sessões de votação (similar a votacoes_objetos mas com estrutura ligeiramente diferente)
 SELECT 
     TRIM(id_votacao) AS id_votacao,
     data AS data_votacao,
@@ -19,7 +19,7 @@ SELECT
     EXTRACT(YEAR FROM data) AS ano,
     EXTRACT(MONTH FROM data) AS mes,
     CURRENT_TIMESTAMP() AS data_carga
-FROM {{ source('raw', 'votacoes_objetos') }}
+FROM {{ source('raw', 'votacoes_proposicoes') }}
 WHERE id_votacao IS NOT NULL 
   AND data IS NOT NULL
   AND data >= '2000-01-01'

@@ -10,7 +10,7 @@ SELECT
     EXTRACT(YEAR FROM data_registro_voto) AS ano,
     EXTRACT(MONTH FROM data_registro_voto) AS mes,
     CURRENT_TIMESTAMP() AS data_carga
-FROM {{ source('camara_raw', 'votos') }}
+FROM {{ source('raw', 'votos') }}
 WHERE id_votacao IS NOT NULL 
   AND deputado_id IS NOT NULL
   AND tipo_voto IS NOT NULL

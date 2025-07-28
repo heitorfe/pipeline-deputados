@@ -33,3 +33,13 @@ sources:
         description: "Occupations of deputies"
       - name: deputadosProfissoes
         description: "Professions of deputies"
+      
+      # Tabelas de Votações
+      - name: votacoes_objetos
+        description: "Voting objects and proposals"
+      - name: votacoes_orientacoes
+        description: "Voting orientations by parties/groups"
+      - name: votacoes_proposicoes
+        description: "Propositions in voting sessions"
+      - name: votos
+        description: "Individual deputy votes"
