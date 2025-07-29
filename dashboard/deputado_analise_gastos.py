@@ -136,14 +136,14 @@ deputado_selecionado = deputado_selecionado_completo.split(" | ")[0]
 deputado_info = deputados_df[deputados_df['NOME_DEPUTADO'] == deputado_selecionado].iloc[0]
 
 # Mostrar informações de contexto do deputado selecionado
-st.info(
-    f"👤 **{deputado_selecionado}** | "
-    f"{deputado_info['STATUS_MANDATO']} | "
-    f"Legislaturas: {int(deputado_info['QTD_LEGISLATURAS'])} | "
-    f"Período: {int(deputado_info['PRIMEIRO_ANO_DESPESA'])}-{int(deputado_info['ULTIMO_ANO_DESPESA'])} | "
-    f"Total: R$ {deputado_info['TOTAL_VALOR']:,.2f} | "
-    f"Despesas: {deputado_info['TOTAL_DESPESAS']:,}"
-)
+# st.info(
+#     f"👤 **{deputado_selecionado}** | "
+#     f"{deputado_info['STATUS_MANDATO']} | "
+#     f"Legislaturas: {int(deputado_info['QTD_LEGISLATURAS'])} | "
+#     f"Período: {int(deputado_info['PRIMEIRO_ANO_DESPESA'])}-{int(deputado_info['ULTIMO_ANO_DESPESA'])} | "
+#     f"Total: R$ {deputado_info['TOTAL_VALOR']:,.2f} | "
+#     f"Despesas: {deputado_info['TOTAL_DESPESAS']:,}"
+# )
 
 # ===========================
 # Cabeçalho com Foto e Histórico do Deputado
@@ -267,13 +267,26 @@ FROM kpis_agregados
 kpis = run_query(kpis_query).iloc[0]
 
 st.markdown("### 📊 Resumo Geral (Histórico Completo)")
-col1, col2, col3, col4, col5, col6 = st.columns(6)
+# Primeira linha - 3 colunas
+col1, col2, col3 = st.columns(3)
 col1.metric("💰 Total Gasto", f"R$ {kpis['TOTAL_GASTO']:,.2f}")
 col2.metric("📄 Nº Despesas", f"{int(kpis['TOTAL_DESPESAS']):,}")
 col3.metric("📅 Meses Ativos", f"{int(kpis['MESES_ATIVIDADE'])}")
+
+# Segunda linha - 3 colunas
+col4, col5, col6 = st.columns(3)
 col4.metric("📈 Média Mensal", f"R$ {kpis['MEDIA_MENSAL']:,.2f}")
 col5.metric("💳 Média/Despesa", f"R$ {kpis['MEDIA_POR_DESPESA']:,.2f}")
 col6.metric("🗓️ Período", f"{int(kpis['PRIMEIRO_ANO']):d}-{int(kpis['ULTIMO_ANO']):d}")
+
+# Terceira linha - 3 colunas
+col7, col8, col9 = st.columns(3)
+col7.metric("🏛️ Legislaturas", f"{int(kpis['QTD_LEGISLATURAS'])}")
+col8.metric("🎯 Partidos", f"{int(kpis['QTD_PARTIDOS'])}")
+col9.metric("🗺️ Estados", f"{int(kpis['QTD_UFS'])}")
+
+# Adicionar espaço em branco
+st.markdown("<br><br>", unsafe_allow_html=True)
 
 # Métricas adicionais se há mudanças históricas
 if kpis['QTD_PARTIDOS'] > 1 or kpis['QTD_UFS'] > 1:
