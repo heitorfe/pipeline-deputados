@@ -4,6 +4,8 @@
 
 Pipeline de dados end-to-end para análise de gastos públicos e atividade parlamentar dos deputados federais brasileiros, utilizando dados abertos da API da Câmara dos Deputados. O projeto implementa uma arquitetura moderna de engenharia de dados com ingestão, transformação e visualização automatizadas.
 
+Link para a fonte dos dados: `https://dadosabertos.camara.leg.br/swagger/api.html?tab=api#staticfile`
+
 ---
 
 ## 🛠️ Stack Tecnológica
