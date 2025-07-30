@@ -6,6 +6,7 @@ import requests
 import boto3
 from io import BytesIO
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from datetime import datetime
 
 AWS_CONN_ID = "aws_s3_conn"
 BUCKET_NAME = "learnsnowflakedbt-heitor"
@@ -90,7 +91,7 @@ def incremental_despesas():
             
             if all_despesas:
                 # Consolida em DataFrame e salva como Parquet
-                df = pd.DataFrame(all_despesas).drop_duplicates()
+                df = pd.DataFrame(all_despesas).drop_duplicates(subset=['codDocumento', 'deputado_id'])
                 
                 # Salva em buffer de memória
                 buffer = BytesIO()
@@ -98,7 +99,8 @@ def incremental_despesas():
                 buffer.seek(0)
                 
                 # Upload para S3 usando S3Hook
-                s3_key = f"camara/despesas/incremental/despesas-{ano}-{mes:02d}.parquet"
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                s3_key = f"camara/despesas/incremental/despesas-{ano}-{mes:02d}-{timestamp}.parquet"
                 s3_hook.load_bytes(
                     bytes_data=buffer.getvalue(),
                     key=s3_key,
