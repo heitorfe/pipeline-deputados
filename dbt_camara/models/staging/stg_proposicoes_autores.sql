@@ -24,7 +24,7 @@ with proposicoes_autores_raw as (
     current_timestamp() as data_carga,
     'api_camara' as fonte
     
-  from CAMARA.raw.proposicoes_autores
+  from {{ source('camara_raw', 'proposicoes_autores')}}
   where id_proposicao is not null 
     and id_deputado_autor is not null
 )

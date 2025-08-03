@@ -41,8 +41,7 @@ with proposicoes_raw as (
     ultimo_status_url as ultimo_status_url,
     
     -- Metadata
-    current_timestamp() as data_carga,
-    '{{ var("data_fonte", "api_camara") }}' as fonte
+    current_timestamp() as data_carga
     
   from {{ source('camara_raw', 'proposicoes') }}
   where id is not null

@@ -1,58 +1,99 @@
 version: 2
 
 models:
-  - name: vw_ranking_deputados
-    description: "Ranking view of deputados by expenses"
+  - name: mrt_gastos_por_deputado
+    description: "Mart de análise de gastos por deputado com métricas de uso da cota parlamentar e comparações"
     columns:
-      - name: nome_deputado
-        description: "Deputy name"
-        data_tests:
+      - name: sk_gastos_deputado
+        description: "Surrogate key único para gastos por deputado"
+        tests:
+          - unique
+          - not_null
+      - name: deputado_id
+        description: "ID natural do deputado"
+        tests:
+          - not_null
+      - name: valor_total_liquido
+        description: "Valor total líquido gasto pelo deputado"
+      - name: percentual_uso_cota_mensal
+        description: "Percentual médio de uso da cota parlamentar mensal"
+      - name: classificacao_uso_cota
+        description: "Classificação qualitativa do uso da cota (Muito Alto, Alto, Médio, Baixo, Muito Baixo)"
+
+  - name: mrt_produtividade_legislativa
+    description: "Mart de análise de produtividade legislativa com métricas de proposições e efetividade"
+    columns:
+      - name: sk_produtividade_deputado
+        description: "Surrogate key único para produtividade por deputado"
+        tests:
+          - unique
+          - not_null
+      - name: deputado_id
+        description: "ID natural do deputado"
+        tests:
+          - not_null
+      - name: total_proposicoes
+        description: "Total de proposições apresentadas pelo deputado"
+      - name: taxa_aprovacao_percentual
+        description: "Percentual de proposições aprovadas sobre o total apresentado"
+      - name: classificacao_produtividade
+        description: "Classificação de produtividade (Muito Produtivo, Produtivo, Moderado, Baixo, Muito Baixo)"
+
+  - name: mrt_presenca_sessoes
+    description: "Mart de análise de presença em sessões e votações"
+    columns:
+      - name: sk_presenca_deputado
+        description: "Surrogate key único para presença por deputado"
+        tests:
+          - unique
+          - not_null
+      - name: deputado_id
+        description: "ID natural do deputado"
+        tests:
+          - not_null
+      - name: taxa_presenca_percentual
+        description: "Percentual de presença em votações"
+      - name: classificacao_presenca
+        description: "Classificação de presença (Excelente, Boa, Regular, Baixa, Muito Baixa)"
+      - name: percentual_alinhamento_lideranca
+        description: "Percentual de votos alinhados com a liderança do partido"
+
+  - name: mrt_eficiencia_por_partido
+    description: "Mart de análise comparativa de eficiência entre partidos políticos"
+    columns:
+      - name: sk_eficiencia_partido
+        description: "Surrogate key único para eficiência por partido"
+        tests:
+          - unique
           - not_null
       - name: sigla_partido
-        description: "Political party"
-      - name: sigla_uf
-        description: "State abbreviation"
-        data_tests:
-          - accepted_values:
-              values: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
-      - name: ano
-        description: "Year"
-        data_tests:
+        description: "Sigla do partido político"
+        tests:
           - not_null
-          - dbt_utils.accepted_range:
-              min_value: 2000
-              max_value: 2030
-      - name: total_gasto
-        description: "Total amount spent"
-        data_tests:
-          - not_null
-          - dbt_utils.accepted_range:
-              min_value: 0
-      - name: total_despesas
-        description: "Total number of expenses"
-        data_tests:
-          - not_null
-          - dbt_utils.accepted_range:
-              min_value: 0
-      - name: ranking_gasto_ano
-        description: "Ranking by spending per year"
-        data_tests:
-          - not_null
-          - dbt_utils.accepted_range:
-              min_value: 1
-      - name: ranking_gasto_uf
-        description: "Ranking by spending per state"
-        data_tests:
-          - not_null
-          - dbt_utils.accepted_range:
-              min_value: 1
+      - name: score_eficiencia_geral
+        description: "Score composto de eficiência do partido (0-100)"
+      - name: ranking_produtividade
+        description: "Ranking do partido em produtividade legislativa"
+      - name: proposicoes_aprovadas_por_milhao_gasto
+        description: "Número de proposições aprovadas por milhão de reais gasto"
 
-    data_tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - nome_deputado
-            - ano
-            - sigla_uf
-            - sigla_partido
-      - dbt_expectations.expect_table_row_count_to_be_between:
-          min_value: 1
+  - name: mrt_trocas_partidarias
+    description: "Mart de análise de trocas partidárias e fidelidade política"
+    columns:
+      - name: sk_trocas_deputado
+        description: "Surrogate key único para trocas por deputado"
+        tests:
+          - unique
+          - not_null
+      - name: deputado_id
+        description: "ID natural do deputado"
+        tests:
+          - not_null
+      - name: total_trocas_partido
+        description: "Número total de trocas de partido"
+      - name: classificacao_fidelidade
+        description: "Classificação de fidelidade partidária"
+      - name: historico_partidos
+        description: "Histórico sequencial dos partidos do deputado"
+      - name: dias_medio_por_partido
+        description: "Tempo médio em cada partido (em dias)"

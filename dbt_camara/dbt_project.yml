@@ -34,10 +34,9 @@ models:
       +materialized: table
     # Fact models - tables for performance
     facts:
-      +materialized: table
-    # Mart models - views for flexibility
+      +materialized: table    # Mart models - tables for performance in dashboards
     marts:
-      +materialized: view
+      +materialized: table
 
 # Configuring seeds
 seeds:
@@ -46,79 +45,79 @@ seeds:
     +delimiter: ";"
     +schema: "raw"
     
-    # Configurações específicas por arquivo
-    frentes:
-      +column_types:
-        id: "integer"
-        idLegislatura: "integer"
-        idSituacao: "integer"
-        coordenador_id: "integer"
-        coordenador_idLegislatura: "integer"
+    # # Configurações específicas por arquivo
+    # frentes:
+    #   +column_types:
+    #     id: "integer"
+    #     idLegislatura: "integer"
+    #     idSituacao: "integer"
+    #     coordenador_id: "integer"
+    #     coordenador_idLegislatura: "integer"
     
-    frentesDeputados:
-      +column_types:
-        id: "integer"
-        deputado_id: "integer"
-        deputado_idLegislatura: "integer"
-        deputado_codTitulo: "integer"
+    # frentesDeputados:
+    #   +column_types:
+    #     id: "integer"
+    #     deputado_id: "integer"
+    #     deputado_idLegislatura: "integer"
+    #     deputado_codTitulo: "integer"
     
-    funcionarios:
-      +column_types:
-        codGrupo: "integer"
+    # funcionarios:
+    #   +column_types:
+    #     codGrupo: "integer"
     
-    grupos:
-      +column_types:
-        id: "integer"
-        codSituacao: "integer"
+    # grupos:
+    #   +column_types:
+    #     id: "integer"
+    #     codSituacao: "integer"
     
     legislaturas:
       +column_types:
         idLegislatura: "integer"
     
-    orgaos:
-      +column_types:
-        codTipoOrgao: "integer"
-        codSituacao: "integer"
+    # orgaos:
+    #   +column_types:
+    #     codTipoOrgao: "integer"
+    #     codSituacao: "integer"
     
-    tecadCategorias:
-      +column_types:
-        codCategoria: "integer"
-        codSubCategoria: "integer"
+    # tecadCategorias:
+    #   +column_types:
+    #     codCategoria: "integer"
+    #     codSubCategoria: "integer"
     
-    tecadTermos:
-      +column_types:
-        codTermo: "integer"
+    # tecadTermos:
+    #   +column_types:
+    #     codTermo: "integer"
 
-    deputadosOcupacoes:
-      +column_types:
-        id: "integer"
-        uri: "string"
-        titulo: "string"
-        entidade: "string"
-        entidadeUF: "string"
-        entidadePais: "string"
-        anoInicio: "integer"
-        anoFim: "integer"
+    # deputadosOcupacoes:
+    #   +column_types:
+    #     id: "integer"
+    #     uri: "string"
+    #     titulo: "string"
+    #     entidade: "string"
+    #     entidadeUF: "string"
+    #     entidadePais: "string"
+    #     anoInicio: "integer"
+    #     anoFim: "integer"
 
-    deputadosProfissoes:
-      +column_types:
-        uri: "string"
-        id: "integer"
-        dataHora: "timestamp"
-        codTipoProfissao: "integer"
-        titulo: "string"
+    # deputadosProfissoes:
+    #   +column_types:
+    #     uri: "string"
+    #     id: "integer"
+    #     dataHora: "timestamp"
+    #     codTipoProfissao: "integer"
+    #     titulo: "string"
 
-    deputadosMandatosExternos:
-      +column_types:
-        id: "integer"
-        uri: "string"
-        nomParlamentar: "string"
-        cargo: "string"
-        siglaUf: "string"
-        municipio: "string"
-        anoInicio: "integer"
-        anoFim: "integer"
-        siglaPartidoEleicao: "string"
-        uriPartidoEleicao: "string"
+    # deputadosMandatosExternos:
+    #   +column_types:
+    #     id: "integer"
+    #     uri: "string"
+    #     nomParlamentar: "string"
+    #     cargo: "string"
+    #     siglaUf: "string"
+    #     municipio: "string"
+    #     anoInicio: "integer"
+    #     anoFim: "integer"
+    #     siglaPartidoEleicao: "string"
+    #     uriPartidoEleicao: "string"
 
 

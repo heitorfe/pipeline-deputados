@@ -1,108 +1,192 @@
 {{
   config(
-    materialized='table'
+    materialized='table',
+    unique_key='sk_votacao'
   )
 }}
 
-with votacoes_base as (
-  select
-    id_votacao,
-    data_votacao,
-    proposicao_id,
-    proposicao_sigla_tipo,
-    proposicao_numero,
-    proposicao_ano,
-    ano,
-    mes
-  from {{ ref('stg_votacoes') }}
+-- Fato Votações: une votações, votos, proposições e deputados
+WITH votacoes_base AS (
+    SELECT 
+        sv.id_votacao,
+        sv.data_votacao,
+        sv.descricao AS descricao_votacao,
+        sv.aprovada,
+        sv.id_evento,
+        sv.id_orgao,
+        sv.sigla_orgao,
+        sv.proposicao_descricao,
+        sv.proposicao_id,
+        sv.uri AS uri_votacao,
+        sv.uri_evento,
+        sv.uri_orgao,
+        sv.votos_sim,
+        sv.votos_nao,
+        sv.votos_outros,
+        sv.ano,
+        sv.mes,
+        sv.data_carga
+    FROM {{ ref('stg_votacoes') }} sv
+    WHERE sv.id_votacao IS NOT NULL
 ),
 
-tempo_ref as (
-  select sk_tempo, ano, mes from {{ ref('dim_tempo') }}
+votos_agregados AS (
+    SELECT 
+        sv.id_votacao,
+        COUNT(*) AS total_votos_registrados,
+        COUNT(CASE WHEN sv.tipo_voto = 'SIM' THEN 1 END) AS votos_sim_detalhados,
+        COUNT(CASE WHEN sv.tipo_voto IN ('NÃO', 'NAO') THEN 1 END) AS votos_nao_detalhados,
+        COUNT(CASE WHEN sv.tipo_voto = 'ABSTENÇÃO' THEN 1 END) AS votos_abstencao,
+        COUNT(CASE WHEN sv.tipo_voto = 'OBSTRUÇÃO' THEN 1 END) AS votos_obstrucao,
+        COUNT(CASE WHEN sv.tipo_voto = 'ARTIGO 17' THEN 1 END) AS votos_artigo17,
+        COUNT(CASE WHEN sv.tipo_voto NOT IN ('SIM', 'NÃO', 'NAO', 'ABSTENÇÃO', 'OBSTRUÇÃO', 'ARTIGO 17') THEN 1 END) AS votos_outros_detalhados,
+          -- Partidos que mais votaram SIM
+        LISTAGG(DISTINCT CASE WHEN sv.tipo_voto = 'SIM' THEN dd.sigla_partido END, ', ') AS partidos_favoraveis,
+        
+        -- Partidos que mais votaram NÃO
+        LISTAGG(DISTINCT CASE WHEN sv.tipo_voto IN ('NÃO', 'NAO') THEN dd.sigla_partido END, ', ') AS partidos_contrarios
+              FROM {{ ref('stg_votos') }} sv
+    LEFT JOIN {{ ref('dim_deputados') }} dd 
+        ON sv.deputado_id = dd.nk_deputado
+        AND sv.data_registro_voto BETWEEN dd.data_inicio_vigencia AND COALESCE(dd.data_fim_vigencia, '9999-12-31'::DATE)
+    GROUP BY sv.id_votacao
 ),
 
-proposicoes_info as (
-  select 
-    proposicao_id,
-    max(case when eh_proponente then deputado_autor_id else null end) as deputado_proponente_id
-  from {{ ref('stg_proposicoes_autores') }}
-  group by proposicao_id
+proposicoes_info AS (
+    SELECT 
+        sp.proposicao_id,
+        sp.sigla_tipo,
+        sp.numero,
+        sp.ano AS ano_proposicao,
+        sp.cod_tipo,
+        sp.descricao_tipo,
+        sp.ementa,
+        sp.ementa_detalhada,
+        sp.data_apresentacao,
+        sp.ultimo_status_descricao_situacao,
+        sp.ultimo_status_id_situacao,
+        sp.ultimo_status_apreciacao
+    FROM {{ ref('stg_proposicoes') }} sp
 ),
 
-votos_agregados as (
-  select
-    v.id_votacao,
-    count(*) as total_votos,
-    sum(case when v.tipo_voto = 'SIM' then 1 else 0 end) as votos_sim,
-    sum(case when v.tipo_voto in ('NÃO', 'NAO') then 1 else 0 end) as votos_nao,
-    sum(case when v.tipo_voto = 'ABSTENÇÃO' then 1 else 0 end) as votos_abstencao,
-    sum(case when v.tipo_voto = 'OBSTRUÇÃO' then 1 else 0 end) as votos_obstrucao,
-    sum(case when v.tipo_voto = 'ARTIGO 17' then 1 else 0 end) as votos_artigo17,
-    sum(case when v.tipo_voto not in ('SIM', 'NÃO', 'NAO', 'ABSTENÇÃO', 'OBSTRUÇÃO', 'ARTIGO 17') then 1 else 0 end) as votos_outros
-  from {{ ref('stg_votos') }} v
-  group by v.id_votacao
-),
-
-fct_votacoes as (
-  select
-    -- Chaves
-    {{ dbt_utils.generate_surrogate_key(['v.id_votacao']) }} as sk_votacao,
-    v.id_votacao,
-    t.sk_tempo,
-    v.proposicao_id,
-    p.deputado_proponente_id,
-    
-    -- Dimensões
-    v.data_votacao,
-    v.proposicao_sigla_tipo,
-    v.proposicao_numero,
-    v.proposicao_ano,
-    
-    -- Métricas de votação
-    coalesce(va.total_votos, 0) as total_votos,
-    coalesce(va.votos_sim, 0) as votos_sim,
-    coalesce(va.votos_nao, 0) as votos_nao,
-    coalesce(va.votos_abstencao, 0) as votos_abstencao,
-    coalesce(va.votos_obstrucao, 0) as votos_obstrucao,
-    coalesce(va.votos_artigo17, 0) as votos_artigo17,
-    coalesce(va.votos_outros, 0) as votos_outros,
-    
-    -- Métricas calculadas
-    case 
-      when coalesce(va.votos_sim, 0) > coalesce(va.votos_nao, 0) then true
-      else false
-    end as foi_aprovada,
-    
-    case 
-      when coalesce(va.total_votos, 0) > 0 
-      then round((coalesce(va.votos_sim, 0) * 100.0 / va.total_votos), 2)
-      else 0
-    end as percentual_aprovacao,
-    
-    case 
-      when coalesce(va.total_votos, 0) > 0 
-      then round((coalesce(va.votos_nao, 0) * 100.0 / va.total_votos), 2)
-      else 0
-    end as percentual_rejeicao,
-    
-    case 
-      when coalesce(va.total_votos, 0) > 0 
-      then round((coalesce(va.votos_abstencao, 0) * 100.0 / va.total_votos), 2)
-      else 0
-    end as percentual_abstencao,
-    
-    -- Flags
-    case when coalesce(va.votos_sim, 0) + coalesce(va.votos_nao, 0) = 0 then true else false end as eh_votacao_sem_resultado,
-    case when coalesce(va.votos_obstrucao, 0) > 0 then true else false end as teve_obstrucao,
-    case when coalesce(va.total_votos, 0) >= 300 then true else false end as eh_votacao_expressiva,
-    
-    -- Metadata
-    current_timestamp() as data_carga
-    
-  from votacoes_base v
-  left join tempo_ref t on v.ano = t.ano and v.mes = t.mes
-  left join proposicoes_info p on v.proposicao_id = p.proposicao_id
-  left join votos_agregados va on v.id_votacao = va.id_votacao
+fct_votacoes AS (
+    SELECT 
+        -- Surrogate Key
+        {{ dbt_utils.generate_surrogate_key([
+            'vb.id_votacao'
+        ]) }} AS sk_votacao,
+        
+        -- Chaves naturais
+        vb.id_votacao AS nk_votacao,
+        vb.proposicao_id AS nk_proposicao,
+          -- Informações da votação
+        vb.data_votacao,
+        vb.descricao_votacao,
+        CASE 
+            WHEN UPPER(TRIM(vb.aprovada::STRING)) IN ('TRUE', '1', 'SIM', 'S') THEN TRUE
+            ELSE FALSE
+        END AS aprovada,
+        vb.id_evento,
+        vb.id_orgao,
+        vb.sigla_orgao,
+        vb.uri_votacao,
+        vb.uri_evento,
+        vb.uri_orgao,
+        
+        -- Resultados oficiais
+        vb.votos_sim,
+        vb.votos_nao,
+        vb.votos_outros,
+        vb.votos_sim + vb.votos_nao + vb.votos_outros AS total_votos_oficiais,
+        
+        -- Resultados detalhados (dos votos individuais)
+        COALESCE(va.total_votos_registrados, 0) AS total_votos_registrados,
+        COALESCE(va.votos_sim_detalhados, 0) AS votos_sim_detalhados,
+        COALESCE(va.votos_nao_detalhados, 0) AS votos_nao_detalhados,
+        COALESCE(va.votos_abstencao, 0) AS votos_abstencao,
+        COALESCE(va.votos_obstrucao, 0) AS votos_obstrucao,
+        COALESCE(va.votos_artigo17, 0) AS votos_artigo17,
+        COALESCE(va.votos_outros_detalhados, 0) AS votos_outros_detalhados,
+        
+        -- Informações da proposição
+        pi.sigla_tipo AS proposicao_sigla_tipo,
+        pi.numero AS proposicao_numero,
+        pi.ano_proposicao,
+        pi.descricao_tipo AS proposicao_descricao_tipo,
+        COALESCE(pi.ementa, vb.proposicao_descricao) AS proposicao_ementa,
+        pi.ementa_detalhada AS proposicao_ementa_detalhada,
+        pi.data_apresentacao AS proposicao_data_apresentacao,
+        pi.ultimo_status_descricao_situacao AS proposicao_situacao_atual,
+        pi.ultimo_status_apreciacao AS proposicao_apreciacao,
+        
+        -- Análises políticas
+        va.partidos_favoraveis,
+        va.partidos_contrarios,
+        
+        -- Métricas derivadas
+        CASE 
+            WHEN vb.votos_sim + vb.votos_nao + vb.votos_outros = 0 THEN NULL
+            ELSE ROUND((vb.votos_sim::FLOAT / (vb.votos_sim + vb.votos_nao + vb.votos_outros)) * 100, 2)
+        END AS percentual_aprovacao,
+        
+        CASE 
+            WHEN vb.votos_nao + vb.votos_outros > 0
+            THEN ROUND((vb.votos_nao::FLOAT / (vb.votos_sim + vb.votos_nao + vb.votos_outros)) * 100, 2)
+            ELSE 0
+        END AS percentual_rejeicao,
+          CASE 
+            WHEN UPPER(TRIM(vb.aprovada::STRING)) IN ('TRUE', '1', 'SIM', 'S') THEN 'APROVADA'
+            ELSE 'REJEITADA'
+        END AS resultado_votacao,
+        
+        CASE 
+            WHEN vb.votos_sim > vb.votos_nao + vb.votos_outros THEN 'MAIORIA_SIMPLES'
+            WHEN vb.votos_sim > (vb.votos_sim + vb.votos_nao + vb.votos_outros) * 0.66 THEN 'MAIORIA_QUALIFICADA'
+            WHEN vb.votos_sim = vb.votos_nao THEN 'EMPATE'
+            ELSE 'MAIORIA_CONTRA'
+        END AS tipo_maioria,
+        
+        -- Classificação por período
+        vb.ano,
+        vb.mes,
+        CASE 
+            WHEN vb.mes IN (1,2,3) THEN 'T1'
+            WHEN vb.mes IN (4,5,6) THEN 'T2'
+            WHEN vb.mes IN (7,8,9) THEN 'T3'
+            ELSE 'T4'
+        END AS trimestre,
+        
+        -- Flags de controle
+        CASE 
+            WHEN pi.proposicao_id IS NOT NULL THEN TRUE 
+            ELSE FALSE 
+        END AS tem_proposicao_vinculada,
+        
+        CASE 
+            WHEN va.total_votos_registrados > 0 THEN TRUE 
+            ELSE FALSE 
+        END AS tem_votos_detalhados,
+        
+        CASE 
+            WHEN COALESCE(va.votos_obstrucao, 0) > 0 THEN TRUE 
+            ELSE FALSE 
+        END AS teve_obstrucao,
+        
+        CASE 
+            WHEN COALESCE(va.total_votos_registrados, 0) >= 300 THEN TRUE 
+            ELSE FALSE 
+        END AS eh_votacao_expressiva,
+        
+        -- Metadados
+        vb.data_carga,
+        CURRENT_TIMESTAMP() AS data_atualizacao
+        
+    FROM votacoes_base vb
+    LEFT JOIN votos_agregados va 
+        ON vb.id_votacao = va.id_votacao
+    LEFT JOIN proposicoes_info pi 
+        ON vb.proposicao_id = pi.proposicao_id
 )
 
-select * from fct_votacoes
+SELECT * FROM fct_votacoes
+ORDER BY data_votacao DESC, nk_votacao

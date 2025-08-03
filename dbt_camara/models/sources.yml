@@ -1,38 +1,57 @@
 version: 2
 
 sources:
-  - name: raw
+  - name: camara_raw
     description: "Raw data layer containing seeds and imported data"
+    database: CAMARA
     schema: raw
     tables:
-      - name: frentes
-        description: "Parliamentary fronts information"
-      - name: frentesDeputados
-        description: "Deputies affiliated with parliamentary fronts"
-      - name: funcionarios
-        description: "Chamber employees"
-      - name: grupos
-        description: "Parliamentary groups"
-      - name: gruposHistorico
-        description: "Historical data of parliamentary groups"
-      - name: gruposMembros
-        description: "Members of parliamentary groups"
+      # - name: frentes
+      #   description: "Parliamentary fronts information"
+      # - name: frentesDeputados
+      #   description: "Deputies affiliated with parliamentary fronts"
+      # - name: funcionarios
+      #   description: "Chamber employees"
+      # - name: grupos
+      #   description: "Parliamentary groups"
+      # - name: gruposHistorico
+      #   description: "Historical data of parliamentary groups"
+      # - name: gruposMembros
+      #   description: "Members of parliamentary groups"
       - name: legislaturas
         description: "Legislative periods"
-      - name: legislaturasMesas
-        description: "Directive boards of legislatures"
-      - name: orgaos
-        description: "Chamber organs and committees"
-      - name: tecadCategorias
-        description: "TECAD categories"
-      - name: tecadTermos
-        description: "TECAD terms"
-      - name: deputadosMandatosExternos
-        description: "External mandates of deputies"
-      - name: deputadosOcupacoes
-        description: "Occupations of deputies"
-      - name: deputadosProfissoes
-        description: "Professions of deputies"
+      # - name: legislaturasMesas
+      #   description: "Directive boards of legislatures"
+      # - name: orgaos
+      #   description: "Chamber organs and committees"
+      # - name: tecadCategorias
+      #   description: "TECAD categories"
+      # - name: tecadTermos
+      #   description: "TECAD terms"
+      # - name: deputadosMandatosExternos
+      #   description: "External mandates of deputies"
+      # - name: deputadosOcupacoes
+      #   description: "Occupations of deputies"
+      # - name: deputadosProfissoes
+      #   description: "Professions of deputies"
+      - name: despesas
+        description: "Expenses of deputies"
+      - name: deputados_detalhes
+        description: "Detailed information about deputies"
+      - name: deputado_historico
+        description: "Historical data of deputies"
+      - name: proposicoes
+        description: "Propositions presented in the Chamber"
+      - name: proposicoes_autores
+        description: "Authors of propositions"
+      - name: proposicoes_temas
+        description: "Themes associated with propositions"
+      - name: proposicoes_tramitacoes
+        description: "Tramitation history of propositions"
+      - name: votacoes
+        description: "Voting sessions"
+      - name: eventos
+        description: "Chamber events and activities"
       
       # Tabelas de Votações
       - name: votacoes_objetos
@@ -43,3 +62,4 @@ sources:
         description: "Propositions in voting sessions"
       - name: votos
         description: "Individual deputy votes"
+
