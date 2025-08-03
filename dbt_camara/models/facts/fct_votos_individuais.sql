@@ -5,7 +5,8 @@
   )
 }}
 
--- Fato Votos Individuais: voto de cada deputado com orientação partidária para análise de fidelidade
+-- Fato Votos Individuais: construído apenas a partir das tabelas staging
+-- Sem JOIN com dim_deputados para evitar problemas de compatibilidade temporal
 WITH votos_base AS (
     SELECT 
         sv.id_votacao,
@@ -59,17 +60,10 @@ votos_com_contexto AS (
             'vb.deputado_id'
         ]) }} AS sk_voto_individual,
         
-        -- Chaves naturais
+        -- Chaves naturais (sem sk_deputado da dimensão)
         vb.id_votacao AS nk_votacao,
         vb.deputado_id AS nk_deputado,
         vi.proposicao_id AS nk_proposicao,
-        
-        -- Join com dimensão deputados (SCD Type 2)
-        dd.sk_deputado,
-        dd.nome_deputado,
-        dd.sigla_partido,
-        dd.sigla_uf,
-        dd.condicao_eleitoral,
         
         -- Informações do voto
         vb.tipo_voto,
@@ -80,12 +74,11 @@ votos_com_contexto AS (
         vi.descricao_votacao,
         vi.aprovada AS votacao_aprovada,
         vi.id_orgao,
-        vi.sigla_orgao,
-        
-        -- Orientação do partido
+        vi.sigla_orgao,        
+        -- Orientação do partido (simplificada sem JOIN com deputado)
         op.orientacao_padronizada AS orientacao_partido,
         
-        -- Análise de fidelidade partidária
+        -- Análise de fidelidade partidária (simplificada)
         CASE 
             WHEN op.orientacao_padronizada IS NULL THEN 'SEM_ORIENTACAO'
             WHEN op.orientacao_padronizada = 'LIBERADO' THEN 'VOTO_LIVRE'
@@ -122,8 +115,7 @@ votos_com_contexto AS (
             WHEN EXTRACT(MONTH FROM vi.data_votacao) IN (4,5,6) THEN 'T2'
             WHEN EXTRACT(MONTH FROM vi.data_votacao) IN (7,8,9) THEN 'T3'
             ELSE 'T4'
-        END AS trimestre_votacao,
-          -- Flags de controle
+        END AS trimestre_votacao,        -- Flags de controle
         CASE WHEN UPPER(TRIM(vi.aprovada::STRING)) IN ('TRUE', '1', 'SIM', 'S') THEN TRUE ELSE FALSE END AS flag_votacao_aprovada,
         CASE WHEN op.orientacao_padronizada IS NOT NULL THEN TRUE ELSE FALSE END AS flag_tem_orientacao_partido,
         CASE WHEN pi.proposicao_id IS NOT NULL THEN TRUE ELSE FALSE END AS flag_tem_proposicao_vinculada,
@@ -135,15 +127,12 @@ votos_com_contexto AS (
     FROM votos_base vb
     LEFT JOIN votacoes_info vi 
         ON vb.id_votacao = vi.id_votacao
-    LEFT JOIN {{ ref('dim_deputados') }} dd 
-        ON vb.deputado_id = dd.nk_deputado
-        AND vb.data_registro_voto BETWEEN dd.data_inicio_vigencia AND COALESCE(dd.data_fim_vigencia, '9999-12-31'::DATE)
     LEFT JOIN orientacoes_partido op 
         ON vb.id_votacao = op.id_votacao 
-        AND dd.sigla_partido = op.sigla_partido_orientacao
+        -- Removido JOIN com deputado para orientação partidária
     LEFT JOIN proposicoes_info pi 
         ON vi.proposicao_id = pi.proposicao_id
-    WHERE dd.sk_deputado IS NOT NULL  -- Apenas votos de deputados válidos
+    -- Removido filtro que exigia deputado válido na dimensão
 )
 
 SELECT * FROM votos_com_contexto

@@ -5,7 +5,8 @@
   )
 }}
 
--- Fato Despesas: registro único por deputado, mês, documento
+-- Fato Despesas: construído apenas a partir de stg_despesas
+-- Sem JOIN com dim_deputados para evitar problemas de compatibilidade temporal
 WITH despesas_base AS (
     SELECT 
         sd.deputado_id,
@@ -37,7 +38,7 @@ WITH despesas_base AS (
     {% endif %}
 ),
 
-despesas_com_chaves AS (
+despesas_com_metricas AS (
     SELECT 
         -- Surrogate Key único
         {{ dbt_utils.generate_surrogate_key([
@@ -47,10 +48,7 @@ despesas_com_chaves AS (
             'mes'
         ]) }} AS sk_despesa,
         
-        -- Chaves estrangeiras para dimensões
-        dd.sk_deputado,
-        
-        -- Chave natural
+        -- Chave natural do deputado (sem SK da dimensão)
         deputado_id AS nk_deputado,
         cod_documento,
         
@@ -79,7 +77,7 @@ despesas_com_chaves AS (
         -- Métricas derivadas
         CASE 
             WHEN valor_documento > 0 
-            THEN (valor_glosa / valor_documento) * 100
+            THEN ROUND((valor_glosa / valor_documento) * 100, 2)
             ELSE 0 
         END AS percentual_glosa,
         
@@ -109,7 +107,7 @@ despesas_com_chaves AS (
         
         -- Flags de controle
         CASE 
-            WHEN url_documento IS NOT NULL THEN TRUE 
+            WHEN url_documento IS NOT NULL AND TRIM(url_documento) != '' THEN TRUE 
             ELSE FALSE 
         END AS tem_documento,
         
@@ -117,18 +115,15 @@ despesas_com_chaves AS (
             WHEN num_ressarcimento IS NOT NULL THEN TRUE 
             ELSE FALSE 
         END AS tem_ressarcimento,
-          -- Metadados
-        db.data_carga,
+        
+        -- Metadados
+        data_carga,
         CURRENT_TIMESTAMP() AS data_atualizacao
-          FROM despesas_base db
-    LEFT JOIN {{ ref('dim_deputados') }} dd 
-        ON db.deputado_id = dd.nk_deputado
-        AND db.data_documento BETWEEN dd.data_inicio_vigencia AND COALESCE(dd.data_fim_vigencia, '9999-12-31'::DATE)
+    FROM despesas_base
 )
 
 SELECT 
     sk_despesa,
-    sk_deputado,
     nk_deputado,
     cod_documento,
     ano,
@@ -156,6 +151,5 @@ SELECT
     tem_ressarcimento,
     data_carga,
     data_atualizacao
-FROM despesas_com_chaves
-WHERE sk_deputado IS NOT NULL  -- Garantir que temos a dimensão deputado
+FROM despesas_com_metricas
 ORDER BY ano DESC, mes DESC, valor_liquido DESC

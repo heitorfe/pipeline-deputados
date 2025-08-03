@@ -1,0 +1,83 @@
+version: 2
+
+models:
+  - name: dim_deputados
+    description: |
+      Dimensão que contém informações históricas dos deputados federais brasileiros.
+      Implementa SCD Type 2 para rastrear mudanças de partido, UF e status ao longo do tempo.
+    meta:
+      owner: "Data Engineering Team"
+      category: "Core Dimension"
+      business_unit: "Political Analytics"
+    columns:
+      - name: sk_deputado
+        description: "Surrogate key único para cada versão histórica do deputado"
+        tests:
+          - unique
+          - not_null
+      - name: nk_deputado
+        description: "Natural key - ID original do deputado na API da Câmara"
+        tests:
+          - not_null
+      - name: nome_deputado
+        description: "Nome parlamentar oficial do deputado"
+        tests:
+          - not_null
+      - name: sigla_partido
+        description: "Sigla do partido político atual"
+        tests:
+          - not_null
+      - name: sigla_uf
+        description: "UF que o deputado representa"
+        tests:
+          - not_null
+      - name: is_current
+        description: "Flag indicando se é o registro atual do deputado"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_tempo
+    description: |
+      Dimensão temporal com datas desde 1990 até 2050.
+      Inclui informações sobre ano, mês, trimestre e relacionamento com legislaturas.
+    meta:
+      owner: "Data Engineering Team"
+      category: "Core Dimension"
+      business_unit: "All"
+    columns:
+      - name: data
+        description: "Data no formato YYYY-MM-DD"
+        tests:
+          - unique
+          - not_null
+      - name: ano
+        description: "Ano extraído da data"
+        tests:
+          - not_null
+      - name: mes
+        description: "Mês extraído da data (1-12)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+  - name: dim_proposicao_temas
+    description: |
+      Dimensão que contém os temas das proposições legislativas.
+      Cada tema tem um código único e uma descrição.
+    meta:
+      owner: "Data Engineering Team"
+      category: "Reference Dimension"
+      business_unit: "Legislative Analytics"
+    columns:
+      - name: cod_tema
+        description: "Código único do tema da proposição"
+        tests:
+          - unique
+          - not_null
+      - name: tema
+        description: "Descrição do tema da proposição"
+        tests:
+          - not_null

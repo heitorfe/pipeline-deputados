@@ -22,9 +22,8 @@ WITH dados_por_partido AS (
         COALESCE(SUM(pl.proposicoes_aprovadas), 0) AS proposicoes_aprovadas_partido,
         COALESCE(ROUND(AVG(pl.total_proposicoes), 2), 0) AS proposicoes_media_por_deputado,
         COALESCE(ROUND(AVG(pl.taxa_aprovacao_percentual), 2), 0) AS taxa_aprovacao_media_partido,
-        
-        -- Presença e Fidelidade
-        COALESCE(ROUND(AVG(ps.taxa_presenca_sessoes), 2), 0) AS taxa_presenca_media_partido,
+          -- Presença e Fidelidade
+        COALESCE(ROUND(AVG(ps.taxa_presenca_percentual), 2), 0) AS taxa_presenca_media_partido,
         COALESCE(ROUND(AVG(ps.taxa_fidelidade_partidaria), 2), 0) AS taxa_fidelidade_media_partido,
         COALESCE(ROUND(AVG(ps.taxa_rebeldia_partidaria), 2), 0) AS taxa_rebeldia_media_partido,
         
