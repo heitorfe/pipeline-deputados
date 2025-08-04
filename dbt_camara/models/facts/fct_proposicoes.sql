@@ -43,6 +43,7 @@ WITH proposicoes_base AS (
 autores_agregados AS (
     SELECT 
         spa.proposicao_id,
+        spa.deputado_autor_id,
         COUNT(*) AS total_autores,
         COUNT(CASE WHEN spa.eh_proponente THEN 1 END) AS total_proponentes,
         
@@ -53,7 +54,7 @@ autores_agregados AS (
         MAX(CASE WHEN spa.eh_proponente THEN spa.sigla_uf_autor END) AS uf_proponente
             
     FROM {{ ref('stg_proposicoes_autores') }} spa
-    GROUP BY spa.proposicao_id
+    GROUP BY spa.proposicao_id, deputado_autor_id
 ),
 
 temas_agregados AS (
@@ -97,13 +98,14 @@ proposicoes_completas AS (
         -- Informações básicas da proposição
         pb.sigla_tipo,
         pb.numero,
-        pb.ano,
+        CASE WHEN pb.ano = 0 THEN YEAR(pb.data_apresentacao) ELSE pb.ano END as ano ,
         pb.cod_tipo,
         pb.descricao_tipo,
         pb.ementa,
         pb.ementa_detalhada,
         pb.keywords,
         pb.data_apresentacao,
+        
         
         -- Status atual
         pb.ultimo_status_data_hora,
@@ -112,6 +114,7 @@ proposicoes_completas AS (
         pb.ultimo_status_sigla_orgao,
         
         -- Informações dos autores
+        aa.deputado_autor_id as nk_deputado,
         COALESCE(aa.total_autores, 0) AS total_autores,
         COALESCE(aa.total_proponentes, 0) AS total_proponentes,
         aa.deputado_proponente_id,
@@ -131,18 +134,36 @@ proposicoes_completas AS (
         vc.total_votos_sim_historico,
         vc.total_votos_nao_historico,
         vc.total_votos_outros_historico,
-        
-        -- Análises e classificações
-        CASE 
-            WHEN pb.ultimo_status_descricao_situacao ILIKE '%APROVAD%' THEN 'APROVADA'
-            WHEN pb.ultimo_status_descricao_situacao ILIKE '%ARQUIVAD%' THEN 'ARQUIVADA'
-            WHEN pb.ultimo_status_descricao_situacao ILIKE '%REJEITAD%' THEN 'REJEITADA'
-            WHEN pb.ultimo_status_descricao_situacao ILIKE '%TRAMITA%' THEN 'EM_TRAMITACAO'
-            WHEN pb.ultimo_status_descricao_situacao ILIKE '%PENDENT%' THEN 'PENDENTE'
-            ELSE 'OUTRO_STATUS'
-        END AS status_final_classificado,
-        
-        CASE 
+        case
+    when pb.ultimo_status_descricao_situacao ilike '%arquivad%' 
+         or pb.ultimo_status_descricao_situacao ilike '%enviada ao arquivo%' 
+         or pb.ultimo_status_descricao_situacao ilike '%remessa ao arquivo%' 
+    then 'ARQUIVADA'
+    when pb.ultimo_status_descricao_situacao ilike '%tramitação finalizada%' 
+    then 'TRAMITACAO_FINALIZADA'
+    when pb.ultimo_status_descricao_situacao ilike '%transformado em norma%' 
+    then 'TRANSFORMADA_EM_LEI'
+    when pb.ultimo_status_descricao_situacao ilike '%transformado em nova proposi%' 
+    then 'TRANSFORMADA_NOVA_PROP'
+    when pb.ultimo_status_descricao_situacao ilike '%retirad%' 
+    then 'RETIRADA'
+    when pb.ultimo_status_descricao_situacao ilike '%devolvid%' 
+    then 'DEVOLVIDA'
+    when pb.ultimo_status_descricao_situacao ilike '%vetad%' 
+    then 'VETADA'
+    when pb.ultimo_status_descricao_situacao ilike '%prejudicial%' 
+    then 'PREJUDICADA'
+    when pb.ultimo_status_descricao_situacao ilike '%perdeu a eficácia%' 
+    then 'SEM_EFICACIA'
+    when pb.ultimo_status_descricao_situacao ilike 'aguardando%' 
+         or pb.ultimo_status_descricao_situacao ilike '%pronta para pauta%' 
+    then 'AGUARDANDO'
+    when pb.ultimo_status_descricao_situacao ilike '%tramit%' 
+         or pb.ultimo_status_descricao_situacao ilike '%conjunto%' 
+    then 'EM_TRAMITACAO'
+    else 'OUTROS'
+end AS situacao_proposicao,
+         CASE 
             WHEN vc.total_votacoes > 0 THEN 'COM_VOTACAO'
             ELSE 'SEM_VOTACAO'
         END AS status_votacao,
